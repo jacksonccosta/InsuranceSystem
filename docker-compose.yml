@@ -1,0 +1,49 @@
+version: '3.4'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: insurance-sqlserver
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password123!
+    ports:
+      - "1433:1433"
+
+  json-server:
+    image: clue/json-server
+    container_name: insurance-mock-api
+    restart: always
+    command: --watch /data/db.json --host 0.0.0.0
+    volumes:
+      - ./mock-data/db.json:/data/db.json
+    ports:
+      - "3000:3000"
+
+  insurance-api:
+    image: insurance-api
+    container_name: insurance-api
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=InsuranceDb;User Id=sa;Password=Password123!;TrustServerCertificate=True;
+      - ExternalServices__InsuredApi=http://json-server:3000
+    depends_on:
+      - sqlserver
+      - json-server
+
+  insurance-web:
+    image: insurance-web
+    container_name: insurance-web
+    build:
+      context: ./src/InsuranceSystem.Web
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - insurance-api

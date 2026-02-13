@@ -1,0 +1,22 @@
+{
+  "insureds": [
+    {
+      "id": 1,
+      "cpf": "12345678900",
+      "nome": "João da Silva",
+      "idade": 30
+    },
+    {
+      "id": 2,
+      "cpf": "98765432100",
+      "nome": "Maria Souza",
+      "idade": 25
+    },
+    {
+      "id": 3,
+      "cpf": "11122233344",
+      "nome": "Carlos Pereira",
+      "idade": 40
+    }
+  ]
+}
